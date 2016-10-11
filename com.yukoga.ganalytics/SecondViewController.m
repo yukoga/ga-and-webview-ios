@@ -7,6 +7,7 @@
 //
 
 #import "SecondViewController.h"
+#import <Google/Analytics.h>
 
 @interface SecondViewController ()
 
@@ -28,6 +29,10 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     LOG(@"Here is SecondViewController's viewDidAppear.");
+    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    tracker.allowIDFACollection = YES;
+    [tracker set:kGAIScreenName value: @"SecondViewController"];
+    [tracker send:[[GAIDictionaryBuilder createScreenView] build]];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -56,12 +61,28 @@
 
 - (void)sendClickEvent: (NSURLRequest *)request {
     if ([request.URL.host isEqualToString:@"clicktracker"]) {
-        NSLog(@"Here is sendClickEvent. Invoke from JavaScript!! - %@", [self getEventLabel: request]);
+        NSString* eventLabel = [self getEventLabel: request];
+        NSLog(@"Here is sendClickEvent. Invoke from JavaScript!! - %@", eventLabel);
+        id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+        tracker.allowIDFACollection = YES;
+        [tracker set:kGAIScreenName value: eventLabel];
+        [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"WebViewTracking"
+                                                              action:@"ClickElements"
+                                                              label: eventLabel
+                                                              value:@1000] build]];
     }
 }
 
 - (void)sendClickLinks: (NSURLRequest *)request {
-    NSLog(@"Here is sendClickLinks. Invoke from JavaScript!! - %@", [self getEventLabel: request]);
+    NSString* eventLabel = [self getEventLabel: request];
+    NSLog(@"Here is sendClickLinks. Invoke from JavaScript!! - %@", eventLabel);
+    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    tracker.allowIDFACollection = YES;
+    [tracker set:kGAIScreenName value: eventLabel];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"WebViewTracking"
+                                                          action:@"ClickLinks"
+                                                           label: eventLabel
+                                                           value:@1000] build]];
 }
 
 - (NSMutableString *)getEventLabel: (NSURLRequest *)request {

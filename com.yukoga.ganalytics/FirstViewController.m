@@ -7,6 +7,7 @@
 //
 
 #import "FirstViewController.h"
+#import <Google/Analytics.h>
 
 @interface FirstViewController ()
 
@@ -23,6 +24,10 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     LOG(@"Here is FirstViewController's viewDidAppear.");
+    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    tracker.allowIDFACollection = YES;
+    [tracker set:kGAIScreenName value: @"FirstViewController"];
+    [tracker send:[[GAIDictionaryBuilder createScreenView] build]];
 }
 
 - (void)didReceiveMemoryWarning {

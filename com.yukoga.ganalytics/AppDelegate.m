@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import <Google/Analytics.h>
 
 @interface AppDelegate ()
 
@@ -17,6 +18,16 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    NSError *configureError;
+    [[GGLContext sharedInstance] configureWithError:&configureError];
+    NSAssert(!configureError, @"Error configuring Google services: %@", configureError);
+    
+    // Google アナリティクスの sharedInstance オブジェクト GAI に対し、必要に応じてオプションを設定する。
+    GAI *gai = [GAI sharedInstance];
+    gai.trackUncaughtExceptions = YES;  // オプション設定例：例外の計測を有効にする
+    gai.logger.logLevel = kGAILogLevelVerbose;  // オプション設定例：ログ レベルを verbose にする（※リリース時には削除する）
+
     return YES;
 }
 
